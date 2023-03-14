@@ -10,6 +10,7 @@ public class Dev {
     private String nome;
     private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
     private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
+    private double totalXP = 0d;
 
     public void inscreverBootcamp(Bootcamp bootcamp) {
         this.conteudosInscritos.addAll(bootcamp.getConteudos());
@@ -20,10 +21,15 @@ public class Dev {
         Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
         if (conteudo.isPresent()) {
             this.conteudosConcluidos.add(conteudo.get());
+            incrementaXpTotal(conteudo.get());
             this.conteudosInscritos.remove(conteudo.get());
         } else {
             System.err.println("Você não está matriculado em nenhum conteudo");
         }
+    }
+
+    public void incrementaXpTotal(Conteudo conteudo) {
+        this.totalXP += conteudo.calcularXp();
     }
 
     public double calcularTotalXp() {
@@ -31,6 +37,14 @@ public class Dev {
                 .stream()
                 .mapToDouble(Conteudo::calcularXp)
                 .sum();
+    }
+
+    public void exibeHistoricoCursos() {
+        for (Conteudo conteudo : this.getConteudosConcluidos()
+        ) {
+            System.out.println("Curso: " + conteudo.getTitulo() + "\t" + "XP: " + conteudo.calcularXp());
+        }
+        System.out.println("XP Total: " + getTotalXP());
     }
 
     public String getNome() {
@@ -55,6 +69,10 @@ public class Dev {
 
     public void setConteudosConcluidos(Set<Conteudo> conteudosConcluidos) {
         this.conteudosConcluidos = conteudosConcluidos;
+    }
+
+    public double getTotalXP() {
+        return totalXP;
     }
 
     @Override
